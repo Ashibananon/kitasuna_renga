@@ -27,12 +27,12 @@ int YLinkedListInsertHead(struct YLinkedList *list, struct YListNode *node);
 int YLinkedListAppendTail(struct YLinkedList *list, struct YListNode *node);
 
 int YLinkedListInsertBefore(struct YLinkedList *list,
-				struct YListNode *pos,
-				struct YListNode *node);
+			struct YListNode *pos,
+			struct YListNode *node);
 
 int YLinkedListAppendAfter(struct YLinkedList *list,
-				struct YListNode *pos,
-				struct YListNode *node);
+			struct YListNode *pos,
+			struct YListNode *node);
 
 struct YListNode *YLinkedListRemoveNode(struct YLinkedList *list, struct YListNode *node);
 

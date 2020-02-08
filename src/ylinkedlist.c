@@ -86,8 +86,8 @@ static int _check_node_on_list(struct YLinkedList *list, struct YListNode *node)
 
 
 int YLinkedListInsertBefore(struct YLinkedList *list,
-				struct YListNode *pos,
-				struct YListNode *node)
+			struct YListNode *pos,
+			struct YListNode *node)
 {
 	if (list == NULL || node == NULL)
 		return 0;
@@ -119,8 +119,8 @@ int YLinkedListInsertBefore(struct YLinkedList *list,
 
 
 int YLinkedListAppendAfter(struct YLinkedList *list,
-				struct YListNode *pos,
-				struct YListNode *node)
+			struct YListNode *pos,
+			struct YListNode *node)
 {
 	if (list == NULL || node == NULL)
 		return 0;
