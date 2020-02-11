@@ -228,14 +228,13 @@ static void insert_node(struct YAVLTree *tree,
 		goto dire_err;
 	}
 
-	pos->height = max_height(pos->lchild, pos->rchild) + 1;
-
 	/* Balance tree */
 	long h1;
 	long h2;
 	long bf;
 	struct YTreeNode *tmp = tree->root;
 	while (pos != NULL) {
+		pos->height = max_height(pos->lchild, pos->rchild) + 1;
 		h1 = YTreeNodeGetHeight(pos->lchild);
 		h2 = YTreeNodeGetHeight(pos->rchild);
 		bf = h1 - h2;
@@ -253,6 +252,8 @@ static void insert_node(struct YAVLTree *tree,
 				right_rotate(pos->rchild);
 				tmp = left_rotate(pos);
 			}
+		} else {
+			tmp = pos;
 		}
 		pos = tmp->parent;
 	}
