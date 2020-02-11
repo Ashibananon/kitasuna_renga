@@ -36,9 +36,8 @@ void YLinkedListInit(struct YLinkedList *list)
 
 void YLinkedListDestroy(struct YLinkedList *list)
 {
-	if (list != NULL) {
+	if (list != NULL)
 		_ylinkedlist_delete_all_nodes(list);
-	}
 }
 
 

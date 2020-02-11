@@ -2,6 +2,7 @@
 
 #include "ylinkedlist.h"
 #include "yarraylist.h"
+#include "yavltree.h"
 
 int main()
 {
@@ -12,6 +13,11 @@ int main()
 	struct YArrayList alist;
 	YArrayListInit(&alist);
 	YArrayListDestroy(&alist);
+
+	struct YAVLTree tree;
+	YAVLTreeInit(&tree);
+	YAVLTreeDestroy(&tree);
+
 
 	return 0;
 }
