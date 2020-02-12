@@ -1,3 +1,25 @@
+/*
+ * Main source
+ *
+ * Copyright(C) 2020 Ashibananon(Yuan).
+ *
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with This program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,11 +48,36 @@ int main()
 	YAVLTreeInit(&tree);
 	YAVLTreeSetDataComparer(&tree, cmper);
 
-	for (i = 0; i < 100; i++) {
+	/*
+	for (i = 100; i > 0; i--) {
 		p = (int *)malloc(sizeof(int));
 		*p = i;
 		YAVLTreeInsert(&tree, p, free);
-	}
+	}*/
+	p = (int *)malloc(sizeof(int));
+	*p = 1;
+	YAVLTreeInsert(&tree, p, free);
+
+	p = (int *)malloc(sizeof(int));
+	*p = 2;
+	YAVLTreeInsert(&tree, p, free);
+
+	p = (int *)malloc(sizeof(int));
+	*p = 3;
+	YAVLTreeInsert(&tree, p, free);
+
+	p = (int *)malloc(sizeof(int));
+	*p = 5;
+	YAVLTreeInsert(&tree, p, free);
+
+	p = (int *)malloc(sizeof(int));
+	*p = 7;
+	YAVLTreeInsert(&tree, p, free);
+
+	p = (int *)malloc(sizeof(int));
+	*p = 8;
+	YAVLTreeInsert(&tree, p, free);
+
 
 	struct YTreeNode *tmp = tree.root;
 	struct YListNode *ln;
