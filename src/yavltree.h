@@ -52,11 +52,13 @@ USERDATA_COMPARER YAVLTreeGetDataComparer(struct YAVLTree *tree);
 
 long YAVLTreeGetCount(struct YAVLTree *tree);
 
-void YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destroyer);
-void YAVLTreeRemove(struct YAVLTree *tree, void *data);
+int YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destroyer);
 struct YTreeNode *YAVLTreeFind(struct YAVLTree *tree, void *data);
-
-
+struct YTreeNode *YAVLTreeGetMinimum(struct YAVLTree *tree);
+struct YTreeNode *YAVLTreeGetMaximum(struct YAVLTree *tree);
+struct YTreeNode *YAVLTreeGetPrevious(struct YTreeNode *node);
+struct YTreeNode *YAVLTreeGetNext(struct YTreeNode *node);
+struct YTreeNode *YAVLTreeRemove(struct YAVLTree *tree, struct YTreeNode *node);
 
 
 #ifdef __cplusplus

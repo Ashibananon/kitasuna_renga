@@ -221,35 +221,38 @@ struct _node_path {
 };
 
 
-static void insert_node(struct YAVLTree *tree,
+static int insert_node(struct YAVLTree *tree,
 			struct _node_path *path,
 			void *data,
 			USERDATA_DESTROYER destroyer)
 {
+	int ret = 0;
 	struct YTreeNode *pos;
 	enum _path_direction direction;
 
 	/* Insert data */
 	struct YTreeNode *node = YTreeNodeNewWithData(data, destroyer);
 	if (node == NULL)
-		return;
+		return 0;
 
 	pos = path->prev;
 	direction = path->direction;
 	if (pos == NULL && direction == _pd_self) {
 		tree->root = node;
 		tree->count++;
-		return;
+		return 1;
 	}
 
 	if (direction == _pd_left) {
 		pos->lchild = node;
 		node->parent = pos;
 		tree->count++;
+		ret = 1;
 	} else if (direction == _pd_right) {
 		pos->rchild = node;
 		node->parent = pos;
 		tree->count++;
+		ret = 1;
 	} else {
 		goto dire_err;
 	}
@@ -285,21 +288,19 @@ static void insert_node(struct YAVLTree *tree,
 	}
 	tree->root = tmp;
 
-	return;
+	return ret;
 
 dire_err:
 	YTreeNodeDelete(node);
-	return;
+	return ret;
 }
 
 
-void YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destroyer)
+int YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destroyer)
 {
-	if (tree == NULL || data == NULL)
-		return;
-
-	if (tree->comparer == NULL)
-		return;
+	int ret = 0;
+	if (tree == NULL || data == NULL || tree->comparer == NULL)
+		return ret;
 
 	int cmp_result;
 	struct _node_path path;
@@ -324,8 +325,263 @@ void YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destro
 		}
 	}
 
-	insert_node(tree, &path, data, destroyer);
+	ret = insert_node(tree, &path, data, destroyer);
 
 done:
-	return;
+	return ret;
+}
+
+
+struct YTreeNode *YAVLTreeFind(struct YAVLTree *tree, void *data)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	if (tree == NULL || data == NULL || tree->comparer == NULL)
+		return ret;
+
+	cur = tree->root;
+	int cmp_result;
+	while (cur != NULL) {
+		cmp_result = tree->comparer(cur->data, data);
+		if (cmp_result > 0) {
+			cur = cur->lchild;
+		} else if (cmp_result < 0) {
+			cur = cur->rchild;
+		} else {
+			ret = cur;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+
+static struct YTreeNode *get_prev_node(struct YTreeNode *node)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	struct YTreeNode *pnt;
+	if (node == NULL)
+		return ret;
+
+	if (node->lchild != NULL) {
+		cur = node->lchild;
+		while (cur != NULL) {
+			ret = cur;
+			cur = cur->rchild;
+		}
+	} else {
+		cur = node;
+		pnt = cur->parent;
+		while (pnt != NULL) {
+			if (pnt->rchild == cur) {
+				ret = pnt;
+				break;
+			}
+			cur = pnt;
+			pnt = pnt->parent;
+		}
+	}
+
+	return ret;
+}
+
+
+static struct YTreeNode *get_next_node(struct YTreeNode *node)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	struct YTreeNode *pnt;
+	if (node == NULL)
+		return ret;
+
+	if (node->rchild != NULL) {
+		cur = node->rchild;
+		while (cur != NULL) {
+			ret = cur;
+			cur = cur->lchild;
+		}
+	} else {
+		cur = node;
+		pnt = cur->parent;
+		while (pnt != NULL) {
+			if (pnt->lchild == cur) {
+				ret = pnt;
+				break;
+			}
+			cur = pnt;
+			pnt = pnt->parent;
+		}
+	}
+
+	return ret;
+}
+
+
+struct YTreeNode *YAVLTreeGetMinimum(struct YAVLTree *tree)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	if (tree == NULL)
+		return ret;
+
+	cur = tree->root;
+	while (cur != NULL) {
+		ret = cur;
+		cur = cur->lchild;
+	}
+
+	return ret;
+}
+
+
+struct YTreeNode *YAVLTreeGetMaximum(struct YAVLTree *tree)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	if (tree == NULL)
+		return ret;
+
+	cur = tree->root;
+	while (cur != NULL) {
+		ret = cur;
+		cur = cur->rchild;
+	}
+
+	return ret;
+}
+
+
+struct YTreeNode *YAVLTreeGetPrevious(struct YTreeNode *node)
+{
+	return get_prev_node(node);
+}
+
+
+struct YTreeNode *YAVLTreeGetNext(struct YTreeNode *node)
+{
+	return get_next_node(node);
+}
+
+
+struct YTreeNode *YAVLTreeRemove(struct YAVLTree *tree, struct YTreeNode *node)
+{
+	struct YTreeNode *ret = NULL;
+	struct YTreeNode *cur;
+	struct YTreeNode *tmp;
+	struct YTreeNode *pnt;
+	void *d;
+	if (tree == NULL || node == NULL || tree->comparer == NULL)
+		return ret;
+
+	if (tree->root == NULL)
+		return ret;
+
+	if (tree->count == 1) {
+		if (tree->root == node) {
+			tree->root = NULL;
+			tree->count--;
+			ret = node;
+		}
+	} else {
+		cur = node;
+		pnt = cur->parent;
+		if (cur->lchild == NULL && cur->rchild == NULL) {
+			if (pnt->lchild == cur) {
+				pnt->lchild = NULL;
+			} else if (pnt->rchild == cur) {
+				pnt->rchild = NULL;
+			} else {
+				/* Error! */
+				goto child_err;
+			}
+			cur->parent = NULL;
+			tree->count--;
+			ret = cur;
+			cur = pnt;
+		} else if (cur->lchild == NULL && cur->rchild != NULL) {
+			tmp = cur->rchild;
+
+			d = cur->data;
+			cur->data = tmp->data;
+			tmp->data = d;
+
+			cur->rchild = NULL;
+			tmp->parent = NULL;
+			tree->count--;
+			ret = tmp;
+		} else if (cur ->lchild != NULL && cur->rchild == NULL) {
+			tmp = cur->lchild;
+
+			d = cur->data;
+			cur->data = tmp->data;
+			tmp->data = d;
+
+			cur->lchild = NULL;
+			tmp->parent = NULL;
+			tree->count--;
+			ret = tmp;
+		} else {
+			tmp = get_next_node(cur);
+
+			d = cur->data;
+			cur->data = tmp->data;
+			tmp->data = d;
+
+			if (tmp->rchild != NULL) {
+				d = tmp->data;
+				tmp->data = tmp->rchild->data;
+				tmp->rchild->data = d;
+				tmp = tmp->rchild;
+			}
+			pnt = tmp->parent;
+			if (pnt->lchild == tmp) {
+				pnt->lchild = NULL;
+			} else if (pnt->rchild == tmp) {
+				pnt->rchild = NULL;
+			} else {
+				/* Error */
+				goto child_err;
+			}
+			tmp->parent = NULL;
+			tree->count--;
+			ret = tmp;
+			cur = pnt;
+		}
+
+		/* Balance tree */
+		long h1;
+		long h2;
+		long bf;
+		tmp = tree->root;
+		while (cur != NULL) {
+			cur->height = max_height(cur->lchild, cur->rchild) + 1;
+			h1 = YTreeNodeGetHeight(cur->lchild);
+			h2 = YTreeNodeGetHeight(cur->rchild);
+			bf = h1 - h2;
+			if (bf < -1) {
+				if (YTreeNodeGetHeight(cur->rchild) <= 0) {
+					tmp = left_rotate(cur);
+				} else {
+					right_rotate(cur->rchild);
+					tmp = left_rotate(cur);
+				}
+			} else if (bf > 1) {
+				if (YTreeNodeGetHeight(cur->lchild) >= 0) {
+					tmp = right_rotate(cur);
+				} else {
+					left_rotate(cur->lchild);
+					tmp = right_rotate(cur);
+				}
+			} else {
+				tmp = cur;
+			}
+			cur = cur->parent;
+		}
+		tree->root = tmp;
+	}
+
+child_err:
+	return ret;
 }
