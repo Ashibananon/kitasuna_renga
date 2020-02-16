@@ -42,14 +42,13 @@ int main()
 
 	struct YArrayList alist;
 	YArrayListInit(&alist);
-	YArrayListDestroy(&alist);
 
 	struct YAVLTree tree;
 	YAVLTreeInit(&tree);
 	YAVLTreeSetDataComparer(&tree, cmper);
 
 
-	for (i = 100; i > 0; i--) {
+	for (i = 1000; i > 0; i--) {
 		p = (int *)malloc(sizeof(int));
 		*p = i;
 		if (YAVLTreeInsert(&tree, p, free) != 1) {
@@ -157,6 +156,58 @@ int main()
 
 	YAVLTreeDestroy(&tree);
 	YLinkedListDestroy(&list);
+
+
+	for (i = 0; i < 100; i++) {
+		int *ttttt = (int *)malloc(sizeof(int));
+		*ttttt = i;
+		struct YListNode *n = YListNodeNewWithData(ttttt, free);
+		YArrayListInsertBeforeIndex(&alist, 0, n);
+	}
+
+	struct YListNode *rr = YArrayListRemoveAt(&alist, 1000);
+	YListNodeDelete(rr);
+
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+	rr = YArrayListRemoveAt(&alist, 10);
+	YListNodeDelete(rr);
+
+	printf("Before remove:\n");
+	for (i = 0; i < YArrayListGetCount(&alist); i++) {
+		struct YListNode *t = (struct YListNode *)YArrayListAt(&alist, i);
+		printf("%d ", *((int *)t->data));
+	}
+	printf("\n");
+
+	i = 0;
+	while (YArrayListGetCount(&alist) > 0 && i < 50) {
+		struct YListNode *pp = YArrayListRemoveAt(&alist, 50);
+		YListNodeDelete(pp);
+		i++;
+	}
+
+	printf("After remove:\n");
+	for (i = 0; i < YArrayListGetCount(&alist); i++) {
+		struct YListNode *t = (struct YListNode *)YArrayListAt(&alist, i);
+		printf("%d ", *((int *)t->data));
+	}
+	printf("\n");
+
+	YArrayListDestroy(&alist);
 
 
 	return 0;

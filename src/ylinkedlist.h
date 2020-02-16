@@ -43,28 +43,74 @@ struct YLinkedList {
 	long count;
 };
 
+/*
+ * Initialize the given list.
+ */
 void YLinkedListInit(struct YLinkedList *list);
+
+/*
+ * Destroy the given list.
+ */
 void YLinkedListDestroy(struct YLinkedList *list);
 
+/*
+ * Allocate a new linked list.
+ * Returns pointer to the list, or NULL if failed.
+ */
 struct YLinkedList *YLinkedListNew(void);
+
+/*
+ * Release the given linked list.
+ */
 void YLinkedListDelete(struct YLinkedList *list);
 
+/*
+ * Insert the given node to the head of the given list.
+ * Returns 1 if success.
+ */
 int YLinkedListInsertHead(struct YLinkedList *list, struct YListNode *node);
+
+/*
+ * Append the given node to the tail of the given list.
+ * Returns 1 if success.
+ */
 int YLinkedListAppendTail(struct YLinkedList *list, struct YListNode *node);
 
+/*
+ * Insert the given node before pos of the list.
+ * Returns 1 if success.
+ */
 int YLinkedListInsertBefore(struct YLinkedList *list,
 			struct YListNode *pos,
 			struct YListNode *node);
 
+/*
+ * Append the given node after pos of the list.
+ * Returns 1 if success.
+ */
 int YLinkedListAppendAfter(struct YLinkedList *list,
 			struct YListNode *pos,
 			struct YListNode *node);
 
+/*
+ * Remove the node from list.
+ * Returns 1 if success.
+ */
 struct YListNode *YLinkedListRemoveNode(struct YLinkedList *list, struct YListNode *node);
 
-
+/*
+ * Linked list getter for list head.
+ */
 struct YListNode *YLinkedListGetHead(struct YLinkedList *list);
+
+/*
+ * Linked list getter for list tail.
+ */
 struct YListNode *YLinkedListGetTail(struct YLinkedList *list);
+
+/*
+ * Linked list getter for count.
+ */
 long YLinkedListGetCount(struct YLinkedList *list);
 
 

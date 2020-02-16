@@ -61,13 +61,14 @@ void YArrayListDestroy(struct YArrayList *list)
 	if (list != NULL) {
 		for (i = 0; i < list->count; i++) {
 			tmp = *(list->nodes + i);
-			if (tmp->destroyer != NULL) {
-				tmp->destroyer(tmp->data);
-				tmp->data = NULL;
-			}
+			YListNodeDelete(tmp);
+			*(list->nodes + i) = NULL;
 		}
+		list->count -= i;
 
 		free(list->nodes);
+		list->nodes = NULL;
+		list->capacity = 0;
 	}
 }
 
@@ -116,7 +117,7 @@ struct YListNode *YArrayListAt(struct YArrayList *list, long index)
 }
 
 
-long YArrayListGetIndex(struct YArrayList *list, struct YListNode *node)
+static long _array_list_get_index(struct YArrayList *list, struct YListNode *node)
 {
 	long ret = -1;
 	long i;
@@ -134,7 +135,7 @@ long YArrayListGetIndex(struct YArrayList *list, struct YListNode *node)
 }
 
 
-int YArrayListAppendAfter(struct YArrayList *list,
+static int _array_list_append_after_node(struct YArrayList *list,
 			struct YListNode *pos,
 			struct YListNode *node)
 {
@@ -142,12 +143,12 @@ int YArrayListAppendAfter(struct YArrayList *list,
 		return 0;
 
 	return YArrayListAppendAfterIndex(list,
-					YArrayListGetIndex(list, pos),
+					_array_list_get_index(list, pos),
 					node);
 }
 
 
-int YArrayListInsertBefore(struct YArrayList *list,
+static int _array_list_insert_before_node(struct YArrayList *list,
 			struct YListNode *pos,
 			struct YListNode *node)
 {
@@ -155,7 +156,7 @@ int YArrayListInsertBefore(struct YArrayList *list,
 		return 0;
 
 	return YArrayListInsertBeforeIndex(list,
-					YArrayListGetIndex(list, pos),
+					_array_list_get_index(list, pos),
 					node);
 }
 
@@ -197,6 +198,8 @@ static int _arraylist_increase_capacity(struct YArrayList *list, long inc)
 	} else {
 		ret = 0;
 	}
+
+	return ret;
 }
 
 int YArrayListAppendAfterIndex(struct YArrayList *list,
@@ -213,11 +216,9 @@ int YArrayListAppendAfterIndex(struct YArrayList *list,
 		return ret;
 
 	if (list->count == 0) {
-		if (index == -1) {
-			*(list->nodes + list->count) = node;
-			list->count++;
-			ret = 1;
-		}
+		*(list->nodes + list->count) = node;
+		list->count++;
+		ret = 1;
 	} else if (index >= 0 && index < list->count) {
 		for (i = list->count; i > index + 1; i--) {
 			*(list->nodes + i) = *(list->nodes + i - 1);
@@ -245,11 +246,9 @@ int YArrayListInsertBeforeIndex(struct YArrayList *list,
 		return ret;
 
 	if (list->count == 0) {
-		if (index == -1) {
-			*(list->nodes + list->count) = node;
-			list->count++;
-			ret = 1;
-		}
+		*(list->nodes + list->count) = node;
+		list->count++;
+		ret = 1;
 	} else if (index >= 0 && index < list->count) {
 		for (i = list->count; i > index; i--) {
 			*(list->nodes + i) = *(list->nodes + i - 1);
@@ -263,12 +262,12 @@ int YArrayListInsertBeforeIndex(struct YArrayList *list,
 }
 
 
-struct YListNode *YArrayListRemove(struct YArrayList *list, struct YListNode *node)
+static struct YListNode *_array_list_remove(struct YArrayList *list, struct YListNode *node)
 {
 	if (list == NULL || node == NULL)
 		return NULL;
 
-	return YArrayListRemoveAt(list, YArrayListGetIndex(list, node));
+	return YArrayListRemoveAt(list, _array_list_get_index(list, node));
 }
 
 

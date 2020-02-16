@@ -38,7 +38,7 @@ extern "C" {
 
 /*
  * Array list capacity increment parameters,
- * all in percentage
+ * all in percentage.
  */
 #define Y_ARRAYLIST_INCREMENT_FACTOR	80
 #define Y_ARRAYLIST_INCREMENT_THRESHOLD	80
@@ -53,36 +53,70 @@ struct YArrayList {
 	long capacity;
 };
 
+/*
+ * Initial array list.
+ */
 void YArrayListInit(struct YArrayList *list);
+
+/*
+ * Initial array list with given capacity.
+ */
 void YArrayListInitWithCapacity(struct YArrayList *list, long cap);
+
+/*
+ * Destroy array list.
+ */
 void YArrayListDestroy(struct YArrayList *list);
 
+/*
+ * Allocate a new array list.
+ * Returns pointer to the list, or NULL if failed.
+ */
 struct YArrayList *YArrayListNew(void);
+
+/*
+ * Allocate a new array list with given capacity.
+ * Returns pointer to the list, or NULL if failed.
+ */
 struct YArrayList *YArrayListNewWithCapacity(long cap);
+
+/*
+ * Release the given array list.
+ */
 void YArrayListDelete(struct YArrayList *list);
 
+/*
+ * Get node on the array list by index.
+ * If error occurs, NULL is returned.
+ */
 struct YListNode *YArrayListAt(struct YArrayList *list, long index);
-long YArrayListGetIndex(struct YArrayList *list, struct YListNode *node);
 
-int YArrayListAppendAfter(struct YArrayList *list,
-			  struct YListNode *pos,
-			  struct YListNode *node);
-
-int YArrayListInsertBefore(struct YArrayList *list,
-			   struct YListNode *pos,
-			   struct YListNode *node);
-
+/*
+ * Append the node after index on the list.
+ * Returns 1 if succeeds.
+ */
 int YArrayListAppendAfterIndex(struct YArrayList *list,
 			   long index,
 			   struct YListNode *node);
 
+/*
+ * Insert the node before index on the list.
+ * Returns 1 if succeeds.
+ */
 int YArrayListInsertBeforeIndex(struct YArrayList *list,
 				long index,
 				struct YListNode *node);
 
-struct YListNode *YArrayListRemove(struct YArrayList *list, struct YListNode *node);
+/*
+ * Remove node at the given index of the list.
+ * Returns the removed node if success, or NULL if failed.
+ */
 struct YListNode *YArrayListRemoveAt(struct YArrayList *list, long index);
 
+/*
+ * Returns count of the given list,
+ * or -1 if error occurs.
+ */
 long YArrayListGetCount(struct YArrayList *list);
 
 

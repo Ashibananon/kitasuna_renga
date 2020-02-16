@@ -33,17 +33,48 @@
 extern "C" {
 #endif
 
+/*
+ * Y Stack
+ */
 struct YStack {
 	struct YLinkedList stack;
 };
 
+/*
+ * Initialize the stack.
+ */
 void YStackInit(struct YStack *s);
+
+/*
+ * Destroy the stack.
+ */
 void YStackDestroy(struct YStack *s);
+
+/*
+ * Allocate a new stack.
+ * Returns pointer to the stack, or NULL if failed.
+ */
 struct YStack *YStackNew(void);
+
+/*
+ * Release the given stack.
+ */
 void YStackDelete(struct YStack *s);
 
+/*
+ * Push the given data to stack.
+ */
 void YStackPush(struct YStack *s, void *data);
+
+/*
+ * Pop from stack.
+ * Returns the data that poped.
+ */
 void *YStackPop(struct YStack *s);
+
+/*
+ * Returns count of the given stack.
+ */
 long YStackGetCount(struct YStack *s);
 
 
