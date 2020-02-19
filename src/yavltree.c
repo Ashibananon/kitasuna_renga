@@ -145,6 +145,16 @@ static long max_height(struct YTreeNode *n1, struct YTreeNode *n2)
 }
 
 
+static long get_balance_factor(struct YTreeNode *node)
+{
+	if (node == NULL)
+		return 0;
+	else
+		return (YTreeNodeGetHeight(node->lchild)
+			- YTreeNodeGetHeight(node->rchild));
+}
+
+
 static struct YTreeNode *left_rotate(struct YTreeNode *node)
 {
 	if (node == NULL)
@@ -262,24 +272,20 @@ static int insert_node(struct YAVLTree *tree,
 	}
 
 	/* Balance tree */
-	long h1;
-	long h2;
 	long bf;
 	struct YTreeNode *tmp = tree->root;
 	while (pos != NULL) {
 		pos->height = max_height(pos->lchild, pos->rchild) + 1;
-		h1 = YTreeNodeGetHeight(pos->lchild);
-		h2 = YTreeNodeGetHeight(pos->rchild);
-		bf = h1 - h2;
+		bf = get_balance_factor(pos);
 		if (bf > 1) {
-			if (tree->comparer(data, YTreeNodeGetData(pos->lchild)) < 0) {
+			if (get_balance_factor(pos->lchild) >= 0) {
 				tmp = right_rotate(pos);
 			} else {
 				left_rotate(pos->lchild);
 				tmp = right_rotate(pos);
 			}
 		} else if (bf < -1) {
-			if (tree->comparer(data, YTreeNodeGetData(pos->rchild)) > 0) {
+			if (get_balance_factor(pos->rchild) <= 0) {
 				tmp = left_rotate(pos);
 			} else {
 				right_rotate(pos->rchild);
@@ -555,24 +561,20 @@ struct YTreeNode *YAVLTreeRemove(struct YAVLTree *tree, struct YTreeNode *node)
 		}
 
 		/* Balance tree */
-		long h1;
-		long h2;
 		long bf;
 		tmp = tree->root;
 		while (cur != NULL) {
 			cur->height = max_height(cur->lchild, cur->rchild) + 1;
-			h1 = YTreeNodeGetHeight(cur->lchild);
-			h2 = YTreeNodeGetHeight(cur->rchild);
-			bf = h1 - h2;
+			bf = get_balance_factor(cur);
 			if (bf < -1) {
-				if (YTreeNodeGetHeight(cur->rchild) <= 0) {
+				if (get_balance_factor(cur->rchild) <= 0) {
 					tmp = left_rotate(cur);
 				} else {
 					right_rotate(cur->rchild);
 					tmp = left_rotate(cur);
 				}
 			} else if (bf > 1) {
-				if (YTreeNodeGetHeight(cur->lchild) >= 0) {
+				if (get_balance_factor(cur->lchild) >= 0) {
 					tmp = right_rotate(cur);
 				} else {
 					left_rotate(cur->lchild);
