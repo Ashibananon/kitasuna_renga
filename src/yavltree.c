@@ -33,7 +33,7 @@ void YAVLTreeInit(struct YAVLTree *tree)
 {
 	if (tree != NULL) {
 		tree->root = NULL;
-		tree->comparer = 0;
+		tree->comparer = NULL;
 		tree->count = 0;
 	}
 }

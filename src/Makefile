@@ -21,7 +21,7 @@
 # along with Kitasuna Renga.  If not, see <https://www.gnu.org/licenses/>.
 
 
-CFLAGS += -g
+CFLAGS += -g -Wall
 
 
 .PHONY: target

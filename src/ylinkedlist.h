@@ -27,6 +27,8 @@
 #ifndef _Y_LINKED_LIST_H_
 #define _Y_LINKED_LIST_H_
 
+#define Y_LINKED_LIST_NODE_CHECK	1
+
 #include "ycommon.h"
 
 #ifdef __cplusplus

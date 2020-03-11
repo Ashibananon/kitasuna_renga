@@ -24,8 +24,8 @@
  */
 
 
-#ifndef _Y_AVLTREE_H
-#define _Y_AVLTREE_H
+#ifndef _Y_AVLTREE_H_
+#define _Y_AVLTREE_H_
 
 #include "ycommon.h"
 

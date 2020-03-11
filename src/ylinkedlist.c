@@ -91,6 +91,9 @@ void YLinkedListDelete(struct YLinkedList *list)
 
 static int _check_node_on_list(struct YLinkedList *list, struct YListNode *node)
 {
+#if (Y_LINKED_LIST_NODE_CHECK == 0)
+	return 0;
+#else
 	int ret = -1;
 	struct YListNode *cur = list->head;
 	if (cur == NULL && cur == node) {
@@ -107,6 +110,7 @@ static int _check_node_on_list(struct YLinkedList *list, struct YListNode *node)
 	}
 
 	return ret;
+#endif
 }
 
 

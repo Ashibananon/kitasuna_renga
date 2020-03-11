@@ -48,7 +48,7 @@ int main()
 	YAVLTreeSetDataComparer(&tree, cmper);
 
 
-	for (i = 1000; i > 0; i--) {
+	for (i = 100; i > 0; i--) {
 		p = (int *)malloc(sizeof(int));
 		*p = i;
 		if (YAVLTreeInsert(&tree, p, free) != 1) {
@@ -98,24 +98,29 @@ int main()
 	}
 
 	p = (int *)malloc(sizeof(int));
-	*p = 4;
+	*p = 0;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
 		free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
-	*p = 4;
+	*p = -1;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
 		free(p);
 	}
 
-	int pp = 8;
+	int pp = 2;
 	struct YTreeNode *tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &pp));
 	YTreeNodeDelete(tnode);
 
-	pp = -1;
-	tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &pp));
-	YTreeNodeDelete(tnode);
+	for (i = -1; i < 110; i++) {
+		tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &i));
+		YTreeNodeDelete(tnode);
+
+	}
+	//pp = -1;
+	//tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &pp));
+	//YTreeNodeDelete(tnode);
 
 	struct YTreeNode *min = YAVLTreeGetMinimum(&tree);
 	struct YTreeNode *max = YAVLTreeGetMaximum(&tree);
@@ -124,7 +129,6 @@ int main()
 		printf("%d ", *((int *)YTreeNodeGetData(ccc)));
 	}
 	printf("\n");
-
 
 	struct YTreeNode *tmp = tree.root;
 	struct YListNode *ln;
@@ -135,6 +139,10 @@ int main()
 		if (ln == NULL)
 			continue;
 		struct YTreeNode *v = ln->data;
+		if (v == NULL) {
+			YListNodeDelete(ln);
+			continue;
+		}
 
 		printf("%d", *((int *)v->data));
 		if (v->parent != NULL) {
