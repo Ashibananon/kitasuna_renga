@@ -38,7 +38,9 @@ extern "C" {
  */
 struct YPair {
 	void *k;
+	USERDATA_DESTROYER k_destroyer;
 	void *v;
+	USERDATA_DESTROYER v_destroyer;
 };
 
 /*
@@ -52,7 +54,8 @@ struct YPair *YPairNew(void);
  * key and value.
  * Returns pointer to the pair, or NULL if failed.
  */
-struct YPair *YPairNewWithData(void *key, void *value);
+struct YPair *YPairNewWithData(void *key, USERDATA_DESTROYER key_destroyer,
+			       void *value, USERDATA_DESTROYER value_destroyer);
 
 /*
  * Release the given Y Pair.
@@ -60,11 +63,20 @@ struct YPair *YPairNewWithData(void *key, void *value);
 void YPairDelete(struct YPair *yp);
 
 /*
+ * Release the given Y Pair with user data.
+ */
+void YPairDeleteWithData(struct YPair *yp);
+
+/*
  * Getter and setters.
  */
-void YPairSetPair(struct YPair *yp, void *key, void *value);
+void YPairSetKeyValue(struct YPair *yp,
+		      void *key, USERDATA_DESTROYER key_destroyer,
+		      void *value, USERDATA_DESTROYER value_destroyer);
 void *YPairGetKey(struct YPair *yp);
+USERDATA_DESTROYER YPairGetKeyDestroyer(struct YPair *yp);
 void *YPairGetValue(struct YPair *yp);
+USERDATA_DESTROYER YPairGetValueDestroyer(struct YPair *yp);
 
 /*
  * Function type which compares Y Pairs.
@@ -88,7 +100,7 @@ void YMapInit(struct YMap *map);
 /*
  * Initialize the map with key comparer.
  */
-void YMapInitWithKeyComparer(struct YMap *map, YPAIR_COMPARER cmp);
+void YMapInitWithPairComparer(struct YMap *map, YPAIR_COMPARER cmp);
 
 /*
  * Destroy the map.
@@ -105,7 +117,7 @@ struct YMap *YMapNew(void);
  * Allocate a new map with key comparer.
  * Returns pointer to the map, or NULL if failed.
  */
-struct YMap *YMapNewWithKeyComparer(YPAIR_COMPARER cmp);
+struct YMap *YMapNewWithPairComparer(YPAIR_COMPARER cmp);
 
 /*
  * Release the given map.
@@ -123,12 +135,14 @@ YPAIR_COMPARER YMapGetPairComparer(struct YMap *map);
  * If the key has been set with value already,
  * old value is returned.
  */
-void *YMapSetKeyValue(struct YMap *map, void *key, void *value);
+void YMapSetKeyValue(struct YMap *map,
+		     void *key, USERDATA_DESTROYER key_destroyer,
+		     void *value, USERDATA_DESTROYER value_destroyer);
 
 /*
  * Remove key-value from map
  */
-void *YMapRemoveKeyValue(struct YMap *map, void *key);
+void YMapRemoveKeyValue(struct YMap *map, void *key);
 
 /*
  * Get value from map by key

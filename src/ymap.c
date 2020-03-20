@@ -41,12 +41,15 @@ struct YPair *YPairNew(void)
 }
 
 
-struct YPair *YPairNewWithData(void *key, void *value)
+struct YPair *YPairNewWithData(void *key, USERDATA_DESTROYER key_destroyer,
+			       void *value, USERDATA_DESTROYER value_destroyer)
 {
 	struct YPair *yp = (struct YPair *)malloc(sizeof(struct YPair));
 	if (yp != NULL) {
 		yp->k = key;
+		yp->k_destroyer = key_destroyer;
 		yp->v = value;
+		yp->v_destroyer = value_destroyer;
 	}
 
 	return yp;
@@ -60,11 +63,29 @@ void YPairDelete(struct YPair *yp)
 }
 
 
-void YPairSetPair(struct YPair *yp, void *key, void *value)
+void YPairDeleteWithData(struct YPair *yp)
+{
+	if (yp != NULL) {
+		if (yp->k_destroyer != NULL) {
+			yp->k_destroyer(yp->k);
+		}
+		if (yp->v_destroyer != NULL) {
+			yp->v_destroyer(yp->v);
+		}
+		free(yp);
+	}
+}
+
+
+void YPairSetKeyValue(struct YPair *yp,
+		      void *key, USERDATA_DESTROYER key_destroyer,
+		      void *value, USERDATA_DESTROYER value_destroyer)
 {
 	if (yp != NULL) {
 		yp->k = key;
+		yp->k_destroyer = key_destroyer;
 		yp->v = value;
+		yp->v_destroyer = value_destroyer;
 	}
 }
 
@@ -73,7 +94,17 @@ void *YPairGetKey(struct YPair *yp)
 {
 	void *ret = NULL;
 	if (yp != NULL)
-		return yp->k;
+		ret = yp->k;
+
+	return ret;
+}
+
+
+USERDATA_DESTROYER YPairGetKeyDestroyer(struct YPair *yp)
+{
+	USERDATA_DESTROYER ret = NULL;
+	if (yp != NULL)
+		ret = yp->k_destroyer;
 
 	return ret;
 }
@@ -89,6 +120,15 @@ void *YPairGetValue(struct YPair *yp)
 }
 
 
+USERDATA_DESTROYER YPairGetValueDestroyer(struct YPair *yp)
+{
+	USERDATA_DESTROYER ret = NULL;
+	if (yp != NULL)
+		ret = yp->v_destroyer;
+
+	return ret;
+}
+
 
 /*
  * YMap
@@ -102,7 +142,7 @@ void YMapInit(struct YMap *map)
 }
 
 
-void YMapInitWithKeyComparer(struct YMap *map, YPAIR_COMPARER cmp)
+void YMapInitWithPairComparer(struct YMap *map, YPAIR_COMPARER cmp)
 {
 	if (map != NULL) {
 		YAVLTreeInitWithData(&map->tree, (USERDATA_COMPARER)cmp);
@@ -129,11 +169,11 @@ struct YMap *YMapNew(void)
 }
 
 
-struct YMap *YMapNewWithKeyComparer(YPAIR_COMPARER cmp)
+struct YMap *YMapNewWithPairComparer(YPAIR_COMPARER cmp)
 {
 	struct YMap *map = (struct YMap *)malloc(sizeof(struct YMap));
 	if (map != NULL) {
-		YMapInitWithKeyComparer(map, cmp);
+		YMapInitWithPairComparer(map, cmp);
 	}
 
 	return map;
@@ -168,50 +208,47 @@ YPAIR_COMPARER YMapGetPairComparer(struct YMap *map)
 }
 
 
-void *YMapSetKeyValue(struct YMap *map, void *key, void *value)
+void YMapSetKeyValue(struct YMap *map,
+		      void *key, USERDATA_DESTROYER key_destroyer,
+		      void *value, USERDATA_DESTROYER value_destroyer)
 {
-	void *ret = NULL;
-
 	if (map == NULL || key == NULL)
-		return ret;
+		return;
 
-	struct YPair *pair = YPairNewWithData(key, value);
+	struct YPair *pair = YPairNewWithData(key, key_destroyer, value, value_destroyer);
 
 	struct YTreeNode *node = YAVLTreeFind(&map->tree, pair);
 	if (node == NULL) {
-		YAVLTreeInsert(&map->tree, pair, (USERDATA_DESTROYER)YPairDelete);
+		YAVLTreeInsert(&map->tree, pair, (USERDATA_DESTROYER)YPairDeleteWithData);
 	} else {
 		YPairDelete(pair);
+		if (key_destroyer != NULL) {
+			key_destroyer(key);
+		}
 		struct YPair *pp = (struct YPair *)YTreeNodeGetData(node);
 		if (pp != NULL) {
-			ret = pp->v;
-			pp->v = value;
+			if (pp->v != value) {
+				if (pp->v_destroyer != NULL) {
+					pp->v_destroyer(pp->v);
+				}
+				pp->v = value;
+			}
 		}
 	}
-
-	return ret;
 }
 
 
-void *YMapRemoveKeyValue(struct YMap *map, void *key)
+void YMapRemoveKeyValue(struct YMap *map, void *key)
 {
-	void *ret = NULL;
-
 	if (map == NULL || key == NULL)
-		return ret;
+		return;
 
 	struct YPair pair;
 	pair.k = key;
 	pair.v = NULL;
 
 	struct YTreeNode *node = YAVLTreeFind(&map->tree, &pair);
-	struct YPair *yp = (struct YPair *)YTreeNodeGetData(node);
-	if (yp != NULL) {
-		ret = yp->v;
-	}
-	YTreeNodeDeleteWithData(node);
-
-	return ret;
+	YTreeNodeDeleteWithData(YAVLTreeRemove(&map->tree, node));
 }
 
 
@@ -223,8 +260,7 @@ void *YMapGetKeyValue(struct YMap *map, void *key)
 		return ret;
 
 	struct YPair pair;
-	pair.k = key;
-	pair.v = NULL;
+	YPairSetKeyValue(&pair, key, NULL, NULL, NULL);
 
 	struct YTreeNode *node = YAVLTreeFind(&map->tree, &pair);
 	struct YPair *yp = (struct YPair *)YTreeNodeGetData(node);

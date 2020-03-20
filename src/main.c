@@ -22,26 +22,33 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ylinkedlist.h"
 #include "yarraylist.h"
 #include "yavltree.h"
 #include "ystack.h"
+#include "ymap.h"
 
 int cmper(void *a, void *b)
 {
 	return (int)(*((int *)a) - *((int *)b));
 }
 
-int main()
+
+static void TestYLinkedList()
 {
-	int i;
+
+}
+
+
+static void TestYAVLTree()
+{
 	int *p;
+	int i;
+
 	struct YLinkedList list;
 	YLinkedListInit(&list);
-
-	struct YArrayList alist;
-	YArrayListInit(&alist);
 
 	struct YAVLTree tree;
 	YAVLTreeInit(&tree);
@@ -158,6 +165,15 @@ int main()
 	YAVLTreeDestroy(&tree);
 	YLinkedListDestroy(&list);
 
+}
+
+
+static void TestYArrayList()
+{
+	struct YArrayList alist;
+	YArrayListInit(&alist);
+
+	int i;
 
 	for (i = 0; i < 100; i++) {
 		int *ttttt = (int *)malloc(sizeof(int));
@@ -210,6 +226,11 @@ int main()
 
 	YArrayListDestroy(&alist);
 
+}
+
+
+static void TestYStack()
+{
 	struct YStack yss;
 	YStackInit(&yss);
 
@@ -233,6 +254,107 @@ int main()
 
 
 	YStackDestroy(&yss);
+}
+
+
+int cmp(struct YPair *a, struct YPair *b)
+{
+	if (a == NULL && b == NULL) {
+		return 0;
+	} else if (a == NULL && b != NULL) {
+		return -1;
+	} else if (a != NULL && b == NULL) {
+		return 1;
+	} else {
+		char *sa = (char *)YPairGetKey(a);
+		char *sb = (char *)YPairGetKey(b);
+		return strcmp(sa, sb);
+	}
+}
+
+static char *GetNewString(char *v)
+{
+	if (v == NULL)
+		return NULL;
+
+	char *ret = (char *)malloc(strlen(v) + 1);
+	if (ret != NULL) {
+		strcpy(ret, v);
+	}
+
+	return ret;
+}
+
+static void PutOldString(char *s)
+{
+	free(s);
+}
+
+static void TestYMap()
+{
+	struct YMap map;
+	YMapInitWithPairComparer(&map, cmp);
+
+	char *sret = NULL;
+
+	YMapSetKeyValue(&map,
+			GetNewString("0001"), (USERDATA_DESTROYER)PutOldString,
+			GetNewString("AAAA"), (USERDATA_DESTROYER)PutOldString);
+
+	YMapSetKeyValue(&map,
+			GetNewString("0002"), (USERDATA_DESTROYER)PutOldString,
+			GetNewString("BBBB"), (USERDATA_DESTROYER)PutOldString);
+
+	YMapSetKeyValue(&map,
+			GetNewString("0003"), (USERDATA_DESTROYER)PutOldString,
+			GetNewString("CCCC"), (USERDATA_DESTROYER)PutOldString);
+
+	sret = (char *)YMapGetKeyValue(&map, "0002");
+	if (sret != NULL)
+		printf("key[0002]-value[%s]\n", sret);
+	else
+		printf("key[0002] has not set to map.\n");
+
+	YMapRemoveKeyValue(&map, "0002");
+	sret = (char *)YMapGetKeyValue(&map, "0002");
+	if (sret != NULL)
+		printf("key[0002]-value[%s]\n", sret);
+	else
+		printf("key[0002] has not set to map.\n");
+
+	YMapSetKeyValue(&map,
+			GetNewString("0003"), (USERDATA_DESTROYER)PutOldString,
+			GetNewString("CCCC"), (USERDATA_DESTROYER)PutOldString);
+	sret = (char *)YMapGetKeyValue(&map, "0003");
+	if (sret != NULL)
+		printf("key[0003]-value[%s]\n", sret);
+	else
+		printf("key[0003] has not set to map.\n");
+
+	YMapSetKeyValue(&map,
+			GetNewString("0003"), (USERDATA_DESTROYER)PutOldString,
+			GetNewString("3333"), (USERDATA_DESTROYER)PutOldString);
+	sret = (char *)YMapGetKeyValue(&map, "0003");
+	if (sret != NULL)
+		printf("key[0003]-value[%s]\n", sret);
+	else
+		printf("key[0003] has not set to map.\n");
+
+	YMapDestroy(&map);
+}
+
+int main()
+{
+
+	TestYLinkedList();
+
+	TestYAVLTree();
+
+	TestYArrayList();
+
+	TestYStack();
+
+	TestYMap();
 
 	return 0;
 }
