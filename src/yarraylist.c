@@ -61,7 +61,7 @@ void YArrayListDestroy(struct YArrayList *list)
 	if (list != NULL) {
 		for (i = 0; i < list->count; i++) {
 			tmp = *(list->nodes + i);
-			YListNodeDelete(tmp);
+			YListNodeDeleteWithData(tmp);
 			*(list->nodes + i) = NULL;
 		}
 		list->count -= i;

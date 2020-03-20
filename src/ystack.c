@@ -62,10 +62,10 @@ void YStackDelete(struct YStack *s)
 }
 
 
-void YStackPush(struct YStack *s, void *data)
+void YStackPush(struct YStack *s, void *data, USERDATA_DESTROYER destroyer)
 {
 	if (s != NULL)
-		YLinkedListAppendTail(&s->stack, YListNodeNewWithData(data, NULL));
+		YLinkedListAppendTail(&s->stack, YListNodeNewWithData(data, destroyer));
 }
 
 

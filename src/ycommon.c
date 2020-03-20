@@ -61,6 +61,13 @@ struct YListNode *YListNodeNewWithData(void *d, USERDATA_DESTROYER destroyer)
 
 void YListNodeDelete(struct YListNode *node)
 {
+	if (node != NULL)
+		free(node);
+}
+
+
+void YListNodeDeleteWithData(struct YListNode *node)
+{
 	if (node != NULL) {
 		if (node->destroyer != NULL) {
 			node->destroyer(node->data);
@@ -142,6 +149,13 @@ struct YTreeNode *YTreeNodeNewWithData(void *d, USERDATA_DESTROYER destroyer)
 
 
 void YTreeNodeDelete(struct YTreeNode *node)
+{
+	if (node != NULL)
+		free(node);
+}
+
+
+void YTreeNodeDeleteWithData(struct YTreeNode *node)
 {
 	if (node != NULL) {
 		if (node->destroyer != NULL) {

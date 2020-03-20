@@ -71,6 +71,12 @@ struct YListNode *YListNodeNewWithData(void *d, USERDATA_DESTROYER destroyer);
 void YListNodeDelete(struct YListNode *node);
 
 /*
+ * Release the given Y List Node with user data.
+ */
+void YListNodeDeleteWithData(struct YListNode *node);
+
+
+/*
  * Y List Node getter and setter for user data.
  */
 void *YListNodeGetData(struct YListNode *node);
@@ -112,6 +118,11 @@ struct YTreeNode *YTreeNodeNewWithData(void *d, USERDATA_DESTROYER destroyer);
  * Release the given Y Tree Node.
  */
 void YTreeNodeDelete(struct YTreeNode *node);
+
+/*
+ * Release the given Y Tree Node with user data.
+ */
+void YTreeNodeDeleteWithData(struct YTreeNode *node);
 
 /*
  * Y Tree Node getter and setter for user data.

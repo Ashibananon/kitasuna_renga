@@ -57,16 +57,16 @@ void YAVLTreeDestroy(struct YAVLTree *tree)
 
 		struct YTreeNode *tnode;
 		struct YStack *stack = YStackNew();
-		YStackPush(stack, tree->root);
+		YStackPush(stack, tree->root, NULL);
 		while (YStackGetCount(stack) > 0) {
 			tnode = (struct YTreeNode *)YStackPop(stack);
 
 			if (tnode->lchild != NULL)
-				YStackPush(stack, tnode->lchild);
+				YStackPush(stack, tnode->lchild, NULL);
 			if (tnode->rchild != NULL)
-				YStackPush(stack, tnode->rchild);
+				YStackPush(stack, tnode->rchild, NULL);
 
-			YTreeNodeDelete(tnode);
+			YTreeNodeDeleteWithData(tnode);
 			tree->count--;
 		}
 
@@ -246,8 +246,12 @@ static int insert_node(struct YAVLTree *tree,
 
 	/* Insert data */
 	struct YTreeNode *node = YTreeNodeNewWithData(data, destroyer);
-	if (node == NULL)
+	if (node == NULL) {
+		if (destroyer != NULL) {
+			destroyer(data);
+		}
 		return 0;
+	}
 
 	pos = path->prev;
 	direction = path->direction;
@@ -268,6 +272,7 @@ static int insert_node(struct YAVLTree *tree,
 		tree->count++;
 		ret = 1;
 	} else {
+		YTreeNodeDeleteWithData(node);
 		goto dire_err;
 	}
 
@@ -298,10 +303,7 @@ static int insert_node(struct YAVLTree *tree,
 	}
 	tree->root = tmp;
 
-	return ret;
-
 dire_err:
-	YTreeNodeDelete(node);
 	return ret;
 }
 
@@ -331,13 +333,16 @@ int YAVLTreeInsert(struct YAVLTree *tree, void *data, USERDATA_DESTROYER destroy
 			path.direction = _pd_left;
 		} else {
 			/* data already in the tree, return */
-			goto done;
+			if (destroyer != NULL) {
+				destroyer(data);
+			}
+			goto data_already_in;
 		}
 	}
 
 	ret = insert_node(tree, &path, data, destroyer);
 
-done:
+data_already_in:
 	return ret;
 }
 

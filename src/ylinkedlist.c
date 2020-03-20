@@ -37,14 +37,13 @@ static long _ylinkedlist_delete_all_nodes(struct YLinkedList *list)
 	struct YListNode *cur;
 	while ((cur = list->head) != NULL) {
 		list->head = list->head->next;
-		list->head->pre = NULL;
-		cur->next = NULL;
 		if (list->head != NULL)
 			list->head->pre = NULL;
+		cur->next = NULL;
 
 		list->count--;
 
-		YListNodeDelete(cur);
+		YListNodeDeleteWithData(cur);
 	}
 
 	return list->count;

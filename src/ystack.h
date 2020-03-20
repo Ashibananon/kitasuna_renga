@@ -64,7 +64,7 @@ void YStackDelete(struct YStack *s);
 /*
  * Push the given data to stack.
  */
-void YStackPush(struct YStack *s, void *data);
+void YStackPush(struct YStack *s, void *data, USERDATA_DESTROYER destroyer);
 
 /*
  * Pop from stack.

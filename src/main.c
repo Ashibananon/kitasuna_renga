@@ -52,75 +52,67 @@ int main()
 		p = (int *)malloc(sizeof(int));
 		*p = i;
 		if (YAVLTreeInsert(&tree, p, free) != 1) {
-			free(p);
+			//free(p);
 		}
 	}
 	p = (int *)malloc(sizeof(int));
 	*p = 1;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 2;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 3;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 5;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 7;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 8;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 0;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = 0;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	p = (int *)malloc(sizeof(int));
 	*p = -1;
 	if (YAVLTreeInsert(&tree, p, free) != 1) {
-		free(p);
+		//free(p);
 	}
 
 	int pp = 2;
 	struct YTreeNode *tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &pp));
-	YTreeNodeDelete(tnode);
+	YTreeNodeDeleteWithData(tnode);
 
-	for (i = -1; i < 110; i++) {
-		tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &i));
-		YTreeNodeDelete(tnode);
-
-	}
-	//pp = -1;
-	//tnode = YAVLTreeRemove(&tree, YAVLTreeFind(&tree, &pp));
-	//YTreeNodeDelete(tnode);
 
 	struct YTreeNode *min = YAVLTreeGetMinimum(&tree);
 	struct YTreeNode *max = YAVLTreeGetMaximum(&tree);
@@ -134,13 +126,14 @@ int main()
 	struct YListNode *ln;
 	YLinkedListAppendTail(&list, YListNodeNewWithData(tmp, NULL));
 	printf("Height: %ld\n", YTreeNodeGetHeight(tmp));
+#if 0
 	while (YLinkedListGetCount(&list) > 0) {
 		ln = YLinkedListRemoveNode(&list, YLinkedListGetHead(&list));
 		if (ln == NULL)
 			continue;
 		struct YTreeNode *v = ln->data;
 		if (v == NULL) {
-			YListNodeDelete(ln);
+			YListNodeDeleteWithData(ln);
 			continue;
 		}
 
@@ -158,9 +151,9 @@ int main()
 		}
 		printf("\n");
 
-		YListNodeDelete(ln);
+		YListNodeDeleteWithData(ln);
 	}
-
+#endif
 
 	YAVLTreeDestroy(&tree);
 	YLinkedListDestroy(&list);
@@ -174,25 +167,25 @@ int main()
 	}
 
 	struct YListNode *rr = YArrayListRemoveAt(&alist, 1000);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 	rr = YArrayListRemoveAt(&alist, 10);
-	YListNodeDelete(rr);
+	YListNodeDeleteWithData(rr);
 
 	printf("Before remove:\n");
 	for (i = 0; i < YArrayListGetCount(&alist); i++) {
@@ -204,7 +197,7 @@ int main()
 	i = 0;
 	while (YArrayListGetCount(&alist) > 0 && i < 50) {
 		struct YListNode *pp = YArrayListRemoveAt(&alist, 50);
-		YListNodeDelete(pp);
+		YListNodeDeleteWithData(pp);
 		i++;
 	}
 
@@ -217,6 +210,34 @@ int main()
 
 	YArrayListDestroy(&alist);
 
+	struct YStack yss;
+	YStackInit(&yss);
+
+	int *ssi = (int *)malloc(sizeof(int));
+	if (ssi != NULL) {
+		*ssi = 1;
+		YStackPush(&yss, ssi, free);
+	}
+
+	ssi = (int *)malloc(sizeof(int));
+	if (ssi != NULL) {
+		*ssi = 2;
+		YStackPush(&yss, ssi, free);
+	}
+
+	int *ssii = (int *)YStackPop(&yss);
+	if (ssii != NULL) {
+		printf("\n\n*ssii=[%d]\n", *ssii);
+		free(ssii);
+	}
+
+	ssii = (int *)YStackPop(&yss);
+	if (ssii != NULL) {
+		printf("*ssii=[%d]\n", *ssii);
+		free(ssii);
+	}
+
+	YStackDestroy(&yss);
 
 	return 0;
 }
