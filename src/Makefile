@@ -27,7 +27,8 @@ CFLAGS += -g -Wall
 .PHONY: target
 target: kitasuna
 
-objs := main.o ylinkedlist.o yarraylist.o ycommon.o ystack.o yavltree.o
+objs := main.o ylinkedlist.o yarraylist.o ycommon.o ystack.o yavltree.o \
+	ymap.o
 
 kitasuna: ${objs}
 	${CC} -o $@ ${CFLAGS} $^

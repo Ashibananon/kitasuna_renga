@@ -168,16 +168,28 @@ YPAIR_COMPARER YMapGetPairComparer(struct YMap *map)
 }
 
 
-void YMapSetKeyValue(struct YMap *map, void *key, void *value)
+void *YMapSetKeyValue(struct YMap *map, void *key, void *value)
 {
+	void *ret = NULL;
+
 	if (map == NULL || key == NULL)
-		return;
+		return ret;
 
 	struct YPair *pair = YPairNewWithData(key, value);
-	if (pair == NULL)
-		return;
 
-	YAVLTreeInsert(&map->tree, pair, (USERDATA_DESTROYER)YPairDelete);
+	struct YTreeNode *node = YAVLTreeFind(&map->tree, pair);
+	if (node == NULL) {
+		YAVLTreeInsert(&map->tree, pair, (USERDATA_DESTROYER)YPairDelete);
+	} else {
+		YPairDelete(pair);
+		struct YPair *pp = (struct YPair *)YTreeNodeGetData(node);
+		if (pp != NULL) {
+			ret = pp->v;
+			pp->v = value;
+		}
+	}
+
+	return ret;
 }
 
 

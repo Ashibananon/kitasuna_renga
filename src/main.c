@@ -231,11 +231,6 @@ int main()
 		free(ssii);
 	}
 
-	ssii = (int *)YStackPop(&yss);
-	if (ssii != NULL) {
-		printf("*ssii=[%d]\n", *ssii);
-		free(ssii);
-	}
 
 	YStackDestroy(&yss);
 

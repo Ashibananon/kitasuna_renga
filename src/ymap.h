@@ -119,9 +119,11 @@ void YMapSetPairComparer(struct YMap *map, YPAIR_COMPARER cmp);
 YPAIR_COMPARER YMapGetPairComparer(struct YMap *map);
 
 /*
- * Insert key-value to map
+ * Insert key-value to map.
+ * If the key has been set with value already,
+ * old value is returned.
  */
-void YMapSetKeyValue(struct YMap *map, void *key, void *value);
+void *YMapSetKeyValue(struct YMap *map, void *key, void *value);
 
 /*
  * Remove key-value from map
