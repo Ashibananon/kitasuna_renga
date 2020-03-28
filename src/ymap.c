@@ -231,7 +231,9 @@ void YMapSetKeyValue(struct YMap *map,
 				if (pp->v_destroyer != NULL) {
 					pp->v_destroyer(pp->v);
 				}
+
 				pp->v = value;
+				pp->v_destroyer = value_destroyer;
 			}
 		}
 	}
