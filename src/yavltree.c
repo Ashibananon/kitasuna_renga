@@ -56,21 +56,22 @@ void YAVLTreeDestroy(struct YAVLTree *tree)
 			return;
 
 		struct YTreeNode *tnode;
-		struct YStack *stack = YStackNew();
-		YStackPush(stack, tree->root, NULL);
-		while (YStackGetCount(stack) > 0) {
-			tnode = (struct YTreeNode *)YStackPop(stack);
+		struct YStack stack;
+		YStackInit(&stack);
+		YStackPush(&stack, tree->root, NULL);
+		while (YStackGetCount(&stack) > 0) {
+			tnode = (struct YTreeNode *)YStackPop(&stack);
 
 			if (tnode->lchild != NULL)
-				YStackPush(stack, tnode->lchild, NULL);
+				YStackPush(&stack, tnode->lchild, NULL);
 			if (tnode->rchild != NULL)
-				YStackPush(stack, tnode->rchild, NULL);
+				YStackPush(&stack, tnode->rchild, NULL);
 
 			YTreeNodeDeleteWithData(tnode);
 			tree->count--;
 		}
 
-		YStackDelete(stack);
+		YStackDestroy(&stack);
 
 		tree->root = NULL;
 		tree->comparer = NULL;
