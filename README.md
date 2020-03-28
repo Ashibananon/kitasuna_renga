@@ -7,9 +7,10 @@ General data structures with Standard C.
 
 Data structures includes:
 -Array List
--Linked List
--Stack
 -AVL Tree
+-Linked List
+-Map
+-Stack
 
 
 Environment supported:
@@ -17,18 +18,13 @@ Environment supported:
 -Windows
 
 
-Environment for develop:
-Ubuntu, with kernel of 5.3.0-29-generic
-
-
 main.c is a demo to show how to use these structures.
 
-To run demo, use the following commands:
+Compile and generate ELF for demo:
 $ make
-This will generate the ELF named kitasuna defined in Makefile.
 
+Run demo:
 $ ./kitasuna
 
-
-To remove .o files, use the following command:
+Remove .o files:
 $ make clean
