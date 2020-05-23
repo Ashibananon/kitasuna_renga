@@ -21,24 +21,43 @@
 # along with Kitasuna Renga.  If not, see <https://www.gnu.org/licenses/>.
 
 
-CFLAGS += -g -Wall
+CC=gcc
+CFLAGS += -g -Wall -fPIC
+LDFLAGS += -fPIC -shared
+
+PWD=`pwd`
+installdir?=${PWD}/out
+installincdir=${installdir}/include
+installlibdir=${installdir}/lib
+
+KITASUNALIB=libkitasuna.so
+test=test
 
 
 .PHONY: target
-target: kitasuna
+target: ${KITASUNALIB} ${test}
 
-objs := main.o ylinkedlist.o yarraylist.o ycommon.o ystack.o yavltree.o \
+test_objs := main.o
+objs := ylinkedlist.o yarraylist.o ycommon.o ystack.o yavltree.o \
 	ymap.o
 
-kitasuna: ${objs}
+${test}: ${test_objs} ${objs}
 	${CC} -o $@ ${CFLAGS} $^
 
+${KITASUNALIB}: ${objs}
+	${CC} -o $@ ${LDFLAGS} $^
+
+install: ${KITASUNALIB} ${test}
+	install -d -m 0755 "${installdir}"
+	install -d -m 0755 "${installincdir}"
+	install -d -m 0755 "${installlibdir}"
+	install -m 755 ${KITASUNALIB} "${installlibdir}"
+	install -m 755 ${PWD}/*.h "${installincdir}"
 
 .SUFFIXES: .c
-
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
 .PHONY: clean
 clean:
-	rm -rf $(objs)
+	rm -rf $(objs) ${test_objs}
